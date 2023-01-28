@@ -1,0 +1,7 @@
+<launch>
+
+ <!-- The arm position controller node -->
+  <node name="ur5_arm_position_controller" type="ur5_arm_position_controller" pkg="arm_controller" output="screen">
+  </node>
+
+</launch>
