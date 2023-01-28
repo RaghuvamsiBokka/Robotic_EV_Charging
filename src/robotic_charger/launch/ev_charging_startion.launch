@@ -3,7 +3,7 @@
 <launch>
 
   <!-- Launch other relevant files-->
-  <!-- <include file="$(find robotic_charger)/launch/robot_description.launch"/> -->
+  <include file="$(find robotic_charger)/launch/robot_description.launch"/>
 
   <!-- World File -->
   <arg name="world_file" default="$(find robotic_charger)/worlds/charging_station.world"/>
@@ -17,18 +17,19 @@
   </include>
 
   <!-- Find my robot Description-->
-  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find robotic_charger)/urdf/pole.xacro'"/>
+  <param name="pole1_description" command="$(find xacro)/xacro --inorder '$(find robotic_charger)/urdf/pole.xacro'"/>
+  <param name="pole2_description" command="$(find xacro)/xacro --inorder '$(find robotic_charger)/urdf/pole2.xacro'"/>
 
   <!-- Spawn Pole -->
   <node name="pole1_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" 
-        args="-urdf -param robot_description -model pole
+        args="-urdf -param pole1_description -model pole
               -x 1.5 -y 0 -z 0
               -R 0 -P 0 -Y 0"/>
 
-  <!-- <node name="pole2_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" 
-        args="-urdf -param robot_description -model pole2 
+  <node name="pole2_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" 
+        args="-urdf -param pole2_description -model pole2 
               -x -1.5 -y 0 -z 0
-              -R 0 -P 0 -Y 0"/> -->
+              -R 0 -P 0 -Y 0"/>
               
   <!-- <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" 
         args="-urdf -param robot_description -model pole 

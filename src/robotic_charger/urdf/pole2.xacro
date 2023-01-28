@@ -1,9 +1,9 @@
 <?xml version='1.0'?>
 
-<robot name="pole" xmlns:xacro="http://www.ros.org/wiki/xacro">
+<robot name="pole2" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
   <!-- gazebo plugin files for sensors -->
-  <xacro:include filename="$(find robotic_charger)/urdf/pole.gazebo" />
+  <xacro:include filename="$(find robotic_charger)/urdf/pole2.gazebo" />
 
   <!-- Constants for robot dimensions -->
   <xacro:property name="PI" value="3.1415926535897931"/>
@@ -17,11 +17,11 @@
 
   <joint name="fixed" type="fixed">
     <parent link="world"/>
-    <child link="pole"/>
+    <child link="pole2"/>
   </joint>
 
   <!-- Base link -->
-  <link name='pole'>
+  <link name='pole2'>
     <pose>0 0 0 0 0 0</pose>
 
     <inertial>
@@ -41,7 +41,7 @@
       </geometry>
     </collision>
 
-    <visual name='pole_visual'>
+    <visual name='pole2_visual'>
       <origin xyz="0 0 ${height/2}" rpy=" 0 0 0"/>
       <geometry>
         <box size="${width} ${width} ${height}"/>
@@ -96,7 +96,7 @@
       <material>Gazebo/Green</material>
     </gazebo>
 
-    <gazebo reference="pole">
+    <gazebo reference="pole2">
       <material>Gazebo/Orange</material>
     </gazebo>
 
