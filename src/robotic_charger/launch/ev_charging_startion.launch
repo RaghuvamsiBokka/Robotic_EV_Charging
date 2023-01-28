@@ -34,8 +34,11 @@
 
   <node name="ur5_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" 
         args="-urdf -param ur5_description -model ur5
-              -x 0 -y 0 -z 0.1
-              -R 0 -P 0 -Y 0"/>
+              -x 0 -y 0 -z 0.1 
+              -R 0 -P 0 -Y 0 -J shoulder_lift_joint -1.5 -J elbow_joint 1.0"/>
+
+  <!-- The joint position control launch file-->
+  <!-- <include file="$(find joint_position_control)/launch/ur5_joint_position_control.launch"/> -->
               
   <!-- <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" 
         args="-urdf -param robot_description -model pole 
