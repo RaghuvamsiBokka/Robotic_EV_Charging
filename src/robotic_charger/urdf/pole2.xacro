@@ -51,7 +51,7 @@
     <joint name="camera_joint" type="fixed">
       <axis xyz="0 1 0" />
       <origin xyz="${camera} 0 ${height}" rpy="0 0 0"/>
-      <parent link="link3"/>
+      <parent link="pole2"/>
       <child link="camera"/>
     </joint>
 
