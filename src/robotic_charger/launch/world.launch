@@ -1,31 +1,37 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
 <launch>
 
-  <!-- Launch other relevant files-->
-  <!-- <include file="$(find robotic_charger)/launch/robot_description.launch"/> -->
+  <arg name="gui" default="true" />
 
-  <!-- World File -->
-  <arg name="world_file" default="$(find robotic_charger)/worlds/empty.world"/>
-
-  <!-- Launch Gazebo World -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find robotic_charger)/worlds/empty.world"/>
+    <arg name="debug" value="false" />
+    <arg name="gui" value="$(arg gui)" />
+    <arg name="paused" value="false"/>
     <arg name="use_sim_time" value="true"/>
-    <arg name="debug" value="false"/>
-    <arg name="gui" value="true" />
-    <arg name="world_name" value="$(arg world_file)"/>
+    <arg name="headless" value="false"/>
   </include>
 
-  <!-- Spawn the first pole -->
-  <node name="spawn_pole_1" pkg="gazebo_ros" type="spawn_model" args="-file $(find robotic_charger)/urdf/pole.xacro -urdf -model pole_1 -x 1.5 -y 0 -z 0"/>
+  <!-- spawn robots-->
+  <group ns="/pole0">
 
-  <!-- Spawn the camera on the first pole -->
-  <node name="spawn_camera_1" pkg="gazebo_ros" type="spawn_model" args="-file $(find robotic_charger)/urdf/camera.xacro -urdf -model camera_1 -robot pole_1 -x 0 -y 0.5 -z 0.2"/>
+    <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find robotic_charger)/urdf/pole.xacro'"/>
+    
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
+            <param name="tf_prefix" value="pole0" />
+    </node>
+    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model pole0 -x -1 -y 0 -z 0 -R 0 -P 0 -Y 0 -param robot_description" />
+    
+  </group>
 
-  <!-- Spawn the second pole -->
-  <node name="spawn_pole_2" pkg="gazebo_ros" type="spawn_model" args="-file $(find robotic_charger)/urdf/pole.xacro -urdf -model pole_2 -x -1.5 -y 0 -z 0"/>
+  <group ns="/pole1">
 
-  <!-- Spawn the camera on the second pole -->
-  <node name="spawn_camera_2" pkg="gazebo_ros" type="spawn_model" args="-file $(find robotic_charger)/urdf/camera.xacro -urdf -model camera_2 -robot pole_2 -x 0 -y 0.5 -z 0.2"/>
-  
+    <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find robotic_charger)/urdf/pole.xacro'"/>
+    
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
+            <param name="tf_prefix" value="pole1" />
+    </node>
+    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model pole1 -x 1 -y 0 -z 0 -R 0 -P 0 -Y 0 -param robot_description" />
+    
+  </group>
+
 </launch>
