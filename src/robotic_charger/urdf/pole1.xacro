@@ -1,0 +1,103 @@
+<?xml version='1.0'?>
+
+<robot name="pole1" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- gazebo plugin files for sensors -->
+  <xacro:include filename="$(find robotic_charger)/urdf/pole1.gazebo" />
+
+  <!-- Constants for robot dimensions -->
+  <xacro:property name="PI" value="3.1415926535897931"/>
+  <xacro:property name="mass" value="100" /> <!-- arbitrary value for mass -->
+  <xacro:property name="width" value="0.2" /> <!-- Square dimensions (widthxwidth) of beams -->
+  <xacro:property name="height" value="1.2" /> <!-- Link 1 -->
+  <xacro:property name="camera" value="0.1" /> <!-- Size of square 'camera' box -->
+
+  <!-- Used for fixing pole to Gazebo 'base_link' -->
+  <link name="world"/>
+
+  <joint name="fixed" type="fixed">
+    <parent link="world"/>
+    <child link="pole"/>
+  </joint>
+
+  <!-- Base link -->
+  <link name='pole'>
+
+    <inertial>
+      <mass value="${mass}"/>
+      <origin xyz="0 0 ${height/2}" rpy=" 0 0 0"/>
+      <inertia
+          ixx="${mass / 12.0 * (width*width + height*height)}" ixy="0" ixz="0"
+          iyy="${mass / 12.0 * (height*height + width*width)}" iyz="0"
+          izz="${mass / 12.0 * (width*width + width*width)}"
+      />
+    </inertial>
+
+    <collision name='collision'>
+      <origin xyz="0 0 ${height/2}" rpy=" 0 0 0"/> 
+      <geometry>
+        <box size="${width} ${width} ${height}"/>
+      </geometry>
+    </collision>
+
+    <visual name='pole_visual'>
+      <origin xyz="0 0 ${height/2}" rpy=" 0 0 0"/>
+      <geometry>
+        <box size="${width} ${width} ${height}"/>
+      </geometry>
+    </visual>
+
+  </link>
+
+  <joint name="camera_joint" type="fixed">
+      <axis xyz="0 1 0" />
+      <origin xyz="0 ${width/2} ${0.7*height} " rpy="0 0 0"/>
+      <parent link="pole"/>
+      <child link="pole1_camera"/>
+  </joint>
+
+  <!-- Camera -->
+  <link name="pole1_camera">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="${camera} ${camera} ${camera}"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="${camera} ${camera} ${camera}"/>
+      </geometry>
+    </visual>
+
+    <inertial>
+      <mass value="1e-5" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+    </inertial>
+  </link>
+
+  <!-- generate an optical frame http://www.ros.org/reps/rep-0103.html#suffix-frames
+      so that ros and opencv can operate on the camera frame correctly -->
+  <joint name="camera_optical_joint" type="fixed">
+    <!-- these values have to be these values otherwise the gazebo camera image
+        won't be aligned properly with the frame it is supposedly originating from -->
+    <origin xyz="0 0 0" rpy="${-pi/2} 0 ${-pi/2}"/>
+    <parent link="pole1_camera"/>
+    <child link="camera_optical"/>
+  </joint>
+
+  <link name="camera_optical">
+  </link>
+
+  <gazebo reference="pole">
+    <material>Gazebo/Orange</material>
+  </gazebo>
+
+  <gazebo reference="pole1_camera">
+    <material>Gazebo/Green</material>
+  </gazebo>
+
+</robot>

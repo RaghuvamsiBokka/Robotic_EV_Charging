@@ -2,9 +2,6 @@
 
 <launch>
 
-  <!-- Launch other relevant files-->
-  <include file="$(find robotic_charger)/launch/robot_description.launch"/>
-
   <!-- World File -->
   <arg name="world_file" default="$(find robotic_charger)/worlds/charging_station.world"/>
 
@@ -16,26 +13,87 @@
     <arg name="world_name" value="$(arg world_file)"/>
   </include>
 
-  <!-- Find my robot Description-->
-  <param name="pole1_description" command="$(find xacro)/xacro --inorder '$(find robotic_charger)/urdf/pole.xacro'"/>
-  <param name="pole2_description" command="$(find xacro)/xacro --inorder '$(find robotic_charger)/urdf/pole2.xacro'"/>
-  <param name="ur5_description" command="$(find xacro)/xacro --inorder '$(find ur_description)/urdf/ur5.xacro'"/>
+  <!-- spawn poless-->
+  <group ns="/pole0">
 
-  <!-- Spawn Pole -->
-  <node name="pole1_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" 
-        args="-urdf -param pole1_description -model pole
-              -x 1.5 -y 0 -z 0
-              -R 0 -P 0 -Y 0"/>
+    <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find robotic_charger)/urdf/pole.xacro'"/>
+    
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
+      <param name="tf_prefix" value="pole0" />
+    </node>
+    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model pole0 -x -1 -y 0 -z 0 -R 0 -P 0 -Y 0 -param robot_description" />
+    
+  </group>
 
-  <node name="pole2_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" 
-        args="-urdf -param pole2_description -model pole2 
-              -x -1.5 -y 0 -z 0
-              -R 0 -P 0 -Y 0"/>
+  <group ns="/pole1">
 
-  <node name="ur5_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" 
-        args="-urdf -param ur5_description -model ur5
-              -x 0 -y 0 -z 0.1 
-              -R 0 -P 0 -Y 0 -J shoulder_lift_joint -1.5 -J elbow_joint 1.0"/>
+    <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find robotic_charger)/urdf/pole1.xacro'"/>
+    
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
+      <param name="tf_prefix" value="pole1" />
+    </node>
+    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model pole1 -x 1 -y 0 -z 0 -R 0 -P 0 -Y 0 -param robot_description" />
+    
+  </group>
+
+  <group ns="/ur5">
+
+    <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find robotic_charger)/urdf/ur5.xacro'"/>
+    
+    <!--Robot description and related parameter files -->
+    <arg name="robot_description_file" default="$(find ur_gazebo)/inc/load_ur5.launch.xml" doc="Launch file which populates the 'robot_description' parameter."/>
+    <arg name="joint_limit_params" default="$(find ur_description)/config/ur5/joint_limits.yaml"/>
+    <arg name="kinematics_params" default="$(find ur_description)/config/ur5/default_kinematics.yaml"/>
+    <arg name="physical_params" default="$(find ur_description)/config/ur5/physical_parameters.yaml"/>
+    <arg name="visual_params" default="$(find ur_description)/config/ur5/visual_parameters.yaml"/>
+
+    <!-- Controller configuration -->
+    <arg name="controller_config_file" default="$(find ur_gazebo)/config/ur5_controllers.yaml" doc="Config file used for defining the ROS-Control controllers."/>
+    <arg name="controllers" default="joint_state_controller eff_joint_traj_controller" doc="Controllers that are activated by default."/>
+    <arg name="stopped_controllers" default="joint_group_eff_controller" doc="Controllers that are initally loaded, but not started."/>
+
+    <!-- robot_state_publisher configuration -->
+    <arg name="tf_prefix" default="" doc="tf_prefix used for the robot."/>
+    <arg name="tf_pub_rate" default="125" doc="Rate at which robot_state_publisher should publish transforms."/>
+
+    <!-- Gazebo parameters -->
+    <arg name="paused" default="false" doc="Starts Gazebo in paused mode" />
+    <arg name="gui" default="true" doc="Starts Gazebo gui" />
+
+    <!-- Load urdf on the parameter server -->
+    <include file="$(arg robot_description_file)">
+      <arg name="joint_limit_params" value="$(arg joint_limit_params)"/>
+      <arg name="kinematics_params" value="$(arg kinematics_params)"/>
+      <arg name="physical_params" value="$(arg physical_params)"/>
+      <arg name="visual_params" value="$(arg visual_params)"/>
+    </include>
+
+    <!-- Robot state publisher -->
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
+      <param name="publish_frequency" type="double" value="$(arg tf_pub_rate)" />
+      <param name="tf_prefix" value="$(arg tf_prefix)" />
+    </node>
+
+    <!-- Start the 'driver' (ie: Gazebo in this case) -->
+    <include file="$(find ur_gazebo)/launch/inc/ur_control.launch.xml">
+      <arg name="controller_config_file" value="$(arg controller_config_file)"/>
+      <arg name="controllers" value="$(arg controllers)"/>
+      <arg name="gui" value="$(arg gui)"/>
+      <arg name="paused" value="$(arg paused)"/>
+      <arg name="stopped_controllers" value="$(arg stopped_controllers)"/>
+    </include>
+
+    <!-- <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
+      <param name="tf_prefix" value="ur5" />
+    </node> -->
+
+    <!-- <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+      <param name="use_gui" value="false"/>
+    </node> -->
+
+    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model ur5 -x 0 -y 0 -z 0.1 -R 0 -P 0 -Y 0 -param robot_description" />
+    
+  </group>
 
   <!-- The joint position control launch file-->
   <!-- <include file="$(find joint_position_control)/launch/ur5_joint_position_control.launch"/> -->

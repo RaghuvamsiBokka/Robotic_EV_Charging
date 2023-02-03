@@ -1,0 +1,36 @@
+<launch>
+
+  <arg name="gui" default="true" />
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find robotic_charger)/worlds/empty.world"/>
+    <arg name="debug" value="false" />
+    <arg name="gui" value="$(arg gui)" />
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="headless" value="false"/>
+  </include>
+
+  <arg name="ns" default="/pole" />
+  <!-- specify prefix for tf transforms -->
+  <param name="tf_prefix" value="pole" />
+
+  <!-- spawn general model for the youbot -->
+  <param name="pole_description" command="$(find xacro)/xacro --inorder '$(find robotic_charger)/urdf/pole.xacro'"/>
+
+  <!-- spawn single robots-->
+  <group ns="$(arg ns)">
+    <param name="tf_prefix" value="pole" />
+
+    <include file="$(find robotic_charger)/launch/pole.launch">
+      <arg name="name" value="$(arg ns)"/>
+      <arg name="pos_x" value="0"/>
+      <arg name="namespace_arg" value="$(arg ns)"/>
+    </include>
+  </group>
+
+  <!-- start tf publisher for laser scanner-->
+  <!-- TODO: should be replaced with a robot-wide tf publisher-->
+  <!-- <node name="tf_scanner" pkg="tf" type="static_transform_publisher" args="0.3 0 -0.03 0 0 0 youbot/base_link youbot/base_laser_front_link 40" /> -->
+
+  </launch>
