@@ -15,14 +15,14 @@
   </gazebo>
 
   <!-- camera -->
-  <gazebo reference="camera">
+  <gazebo reference="pole_camera">
     <mu1>0.2</mu1>
     <mu2>0.2</mu2>
     <material>Gazebo/Green</material>
   </gazebo>
 
   <!-- camera -->
-  <gazebo reference="camera">
+  <gazebo reference="pole_camera">
     <sensor type="camera" name="camera1">
       <update_rate>30.0</update_rate>
       <camera name="head">
