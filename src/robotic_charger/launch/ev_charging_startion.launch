@@ -2,11 +2,8 @@
 
 <launch>
 
-  <!-- Launch other relevant files-->
-  <include file="$(find robotic_charger)/launch/robot_description.launch"/>
-
   <!-- World File -->
-  <arg name="world_file" default="$(find robotic_charger)/worlds/empty.world"/>
+  <arg name="world_file" default="$(find robotic_charger)/worlds/charging_station.world"/>
 
   <!-- Launch Gazebo World -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
@@ -16,14 +13,52 @@
     <arg name="world_name" value="$(arg world_file)"/>
   </include>
 
-  <!-- Find my robot Description-->
-  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find robotic_charger)/urdf/pole.xacro'"/>
+  <!-- spawn poless-->
+  <group ns="/pole0">
 
-  <!-- Spawn Pole -->
-  <node name="pole1_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" 
-        args="-urdf -param robot_description -model pole
-              -x 1.5 -y 0 -z 0
-              -R 0 -P 0 -Y 0"/>
+    <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find robotic_charger)/urdf/pole.xacro'"/>
+    
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
+      <param name="tf_prefix" value="pole0" />
+    </node>
+    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model pole0 -x -1 -y 0 -z 0 -R 0 -P 0 -Y 0 -param robot_description" />
+    
+  </group>
+
+  <group ns="/pole1">
+
+    <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find robotic_charger)/urdf/pole1.xacro'"/>
+    
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
+      <param name="tf_prefix" value="pole1" />
+    </node>
+    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model pole1 -x 1 -y 0 -z 0 -R 0 -P 0 -Y 0 -param robot_description" />
+    
+  </group>
+
+  <group ns="/ur5">
+
+    <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find robotic_charger)/urdf/ur5.xacro'"/>
+    
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
+      <param name="tf_prefix" value="ur5" />
+    </node>
+
+    <!-- <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+      <param name="use_gui" value="false"/>
+    </node> -->
+
+    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model ur5 -x 0 -y 0 -z 0.1 -R 0 -P 0 -Y 0 -param robot_description" />
+    
+  </group>
+
+  <!-- The joint position control launch file-->
+  <!-- <include file="$(find joint_position_control)/launch/ur5_joint_position_control.launch"/> -->
+              
+  <!-- <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" 
+        args="-urdf -param robot_description -model pole 
+              -x $(arg x) -y $(arg y) -z $(arg z)
+              -R $(arg roll) -P $(arg pitch) -Y $(arg yaw)"/> -->
 
   <!--launch rviz-->
   <!-- <node name="rviz" pkg="rviz" type="rviz" respawn="false"/> -->
