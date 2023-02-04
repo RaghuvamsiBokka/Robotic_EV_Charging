@@ -1,0 +1,20 @@
+<launch>
+
+  <!-- Start a nodelet manager; the name must be unqualified here -->
+  <node pkg="nodelet" type="nodelet" name="pipeline" args="manager" />
+
+  <!-- Include the stereo_image_proc.launch file and pass in a qualified manager name -->
+  <include file="$(find stereo_image_proc)/launch/stereo_image_proc.launch" ns="stereo">
+    <arg name="manager" value="/pipeline" />
+    
+    <remap from="/stereo/left/image_raw" to="/pole0/camera/image_raw"/> 
+    <remap from="/stereo/left/camera_info" to="/pole0/camera/camera_info"/> 
+
+    <remap from="/stereo/right/image_raw" to="/pole1/camera/image_raw"/> 
+    <remap from="/stereo/right/camera_info" to="/pole1/camera/camera_info"/> 
+
+    <!-- <param name="correlation_window_size " value="15"/> -->
+    
+  </include>
+
+</launch>
