@@ -15,3 +15,4 @@
 2. https://roboticscasual.com/tutorial-controlling-tcp-position-of-the-ur5-robot-with-kdl-in-c-inverse-kinematics/
 3. http://classic.gazebosim.org/tutorials?tut=ros_urdf&cat=connect_ros#Tweakingyourmodel
 4. https://classic.gazebosim.org/tutorials?tut=ros_gzplugins
+5. http://wiki.ros.org/stereo_image_proc
