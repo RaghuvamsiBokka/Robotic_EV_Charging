@@ -87,7 +87,7 @@ int main(int argc, char** argv)
       right_received = false;
     }
 
-    ros::spinOnce();
+    // ros::spinOnce();
     rate.sleep();
   }
 
