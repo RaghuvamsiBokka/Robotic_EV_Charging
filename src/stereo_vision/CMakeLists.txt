@@ -7,7 +7,14 @@ project(stereo_vision)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED)
+find_package(catkin REQUIRED COMPONENTS
+  cv_bridge
+  image_transport
+#   opencv2
+  roscpp
+  sensor_msgs
+)
+find_package(OpenCV REQUIRED)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -98,22 +105,32 @@ find_package(catkin REQUIRED)
 ## LIBRARIES: libraries you create in this project that dependent projects also need
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
-catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES stereo_vision
-#  CATKIN_DEPENDS other_catkin_pkg
-#  DEPENDS system_lib
-)
 
+# catkin_package(
+# #  INCLUDE_DIRS include
+# #  LIBRARIES stereo_vision
+# #  CATKIN_DEPENDS other_catkin_pkg
+# #  DEPENDS system_lib
+# )
+
+catkin_package(
+  CATKIN_DEPENDS cv_bridge image_transport opencv2 roscpp sensor_msgs
+)
 ###########
 ## Build ##
 ###########
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
+
+# include_directories(
+# # include
+# # ${catkin_INCLUDE_DIRS}
+# )
+
 include_directories(
-# include
-# ${catkin_INCLUDE_DIRS}
+  ${catkin_INCLUDE_DIRS}
+  ${OpenCV_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
@@ -145,6 +162,13 @@ include_directories(
 # target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}
 # )
+
+add_executable(stereo_vision src/depth_image_publisher.cpp)
+
+target_link_libraries(stereo_vision
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+)
 
 #############
 ## Install ##
