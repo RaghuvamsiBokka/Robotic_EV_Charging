@@ -163,9 +163,9 @@ include_directories(
 #   ${catkin_LIBRARIES}
 # )
 
-add_executable(stereo_vision src/depth_image_publisher.cpp)
+add_executable(stereo_to_depth_image src/stereo_to_depth_image.cpp)
 
-target_link_libraries(stereo_vision
+target_link_libraries(stereo_to_depth_image
   ${catkin_LIBRARIES}
   ${OpenCV_LIBRARIES}
 )
