@@ -5,7 +5,8 @@
   <arg name="respawn" default="false" />
   <arg name="left" default="left" />
   <arg name="right" default="right" />
-  <!-- TODO Arguments for sync policy, etc? -->
+  <arg name="downsampling_factor" value="1" />
+  <arg name="approximate_sync" default="true" />
 
   <arg     if="$(arg respawn)" name="bond" value="" />
   <arg unless="$(arg respawn)" name="bond" value="--no-bond" />
@@ -27,16 +28,14 @@
   <!-- Disparity image -->
   <node pkg="nodelet" type="nodelet" name="disparity"
         args="load stereo_image_proc/disparity $(arg manager) $(arg bond)"
-	respawn="$(arg respawn)" />
+	respawn="$(arg respawn)" >
+    <param name="approximate_sync" value="$(arg approximate_sync)" />
+  </node>
 
-  <!-- Point cloud, PCL-friendly -->
+  <!-- PointCloud2 -->
   <node pkg="nodelet" type="nodelet" name="point_cloud2"
         args="load stereo_image_proc/point_cloud2 $(arg manager) $(arg bond)"
-	respawn="$(arg respawn)" />
-
-  <!-- Point cloud, deprecated format -->
-  <node pkg="nodelet" type="nodelet" name="point_cloud"
-        args="load stereo_image_proc/point_cloud $(arg manager) $(arg bond)"
-	respawn="$(arg respawn)" />
-
+	respawn="$(arg respawn)" >
+    <param name="approximate_sync" value="$(arg approximate_sync)" />
+  </node>
 </launch>

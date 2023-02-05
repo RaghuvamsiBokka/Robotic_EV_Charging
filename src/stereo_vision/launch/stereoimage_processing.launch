@@ -13,8 +13,9 @@
     <remap from="/stereo/right/image_raw" to="/pole1/camera/image_raw"/> 
     <remap from="/stereo/right/camera_info" to="/pole1/camera/camera_info"/> 
 
-    <param name="queue_size " value="10"/>
-    <param name="approximate_sync" value="true"/>
+    <!-- <param name="queue_size " value="20"/>
+    <param name="approximate_sync" value="true"/> 
+    No need edits made in nodelets to make these default values -->
     
   </include>
 

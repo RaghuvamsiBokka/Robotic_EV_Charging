@@ -60,9 +60,9 @@ void PointCloud2Nodelet::onInit()
   // Synchronize inputs. Topic subscriptions happen on demand in the connection
   // callback. Optionally do approximate synchronization.
   int queue_size;
-  private_nh.param("queue_size", queue_size, 5);
+  private_nh.param("queue_size", queue_size, 20);
   bool approx;
-  private_nh.param("approximate_sync", approx, false);
+  private_nh.param("approximate_sync", approx, true);
   if (approx)
   {
     approximate_sync_.reset( new ApproximateSync(ApproximatePolicy(queue_size),
@@ -106,7 +106,7 @@ void PointCloud2Nodelet::connectCb()
     sub_l_image_  .subscribe(*it_, "left/image_rect_color", 1, hints);
     sub_l_info_   .subscribe(nh,   "left/camera_info", 1);
     sub_r_info_   .subscribe(nh,   "right/camera_info", 1);
-    sub_disparity_.subscribe(nh,   "disparity", 1);
+    sub_disparity_.subscribe(nh,   "/stereo/disparity", 1);
   }
 }
 
